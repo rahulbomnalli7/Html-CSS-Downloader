@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Web Code Analyzer</title>
+</head>
+<body>
+    <h1>Web Code Analyzer</h1>
+    <form method="POST" action="/get_code">
+        <input type="text" name="url" placeholder="Enter a URL" required>
+        <button type="submit">Get Code</button>
+    </form>
+
+    <div id="download-links" style="display: none;">
+        <h2>Download HTML and CSS Files:</h2>
+        <p><a href="/download_html" download="download.html">Download HTML</a></p>
+        <p><a href="/download_css" download="styles.css">Download CSS</a></p>
+    </div>
+
+    <script>
+        // Show the download links after the code is generated
+        document.addEventListener("DOMContentLoaded", function () {
+            const downloadLinks = document.getElementById("download-links");
+            if ({{ html_code|length > 0 }}) {
+                downloadLinks.style.display = "block";
+            }
+        });
+    </script>
+</body>
+</html>
