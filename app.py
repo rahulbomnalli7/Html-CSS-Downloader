@@ -1,10 +1,6 @@
-from flask import Flask, render_template, request, Response, send_file
+from flask import Flask, render_template, request
 import requests
 from bs4 import BeautifulSoup
-import csscompressor
-import htmlmin
-import tempfile
-import os
 
 app = Flask(__name__)
 
@@ -29,6 +25,7 @@ def get_code():
         if response.status_code == 200:
             content = response.text
             soup = BeautifulSoup(content, 'html.parser')
+            html_code = soup.prettify()
             base_url = response.url
 
             # Fetch external CSS files
@@ -39,37 +36,11 @@ def get_code():
                 if css_response.status_code == 200:
                     css_code += f"/* CSS from {css_url} */\n" + css_response.text + "\n"
 
-            # Minify HTML and CSS
-            minified_html = htmlmin.minify(soup.prettify(), remove_comments=True)
-            minified_css = csscompressor.compress(css_code)
-
-            # Create temporary files for HTML and CSS
-            with tempfile.NamedTemporaryFile(delete=False, mode='w', suffix=".html") as html_file:
-                html_file.write(minified_html)
-
-            with tempfile.NamedTemporaryFile(delete=False, mode='w', suffix=".css") as css_file:
-                css_file.write(minified_css)
-
-            # Get the file paths
-            html_filepath = html_file.name
-            css_filepath = css_file.name
-
-            # Offer the HTML and CSS files for download
-            return render_template('result.html', html_filepath=html_filepath, css_filepath=css_filepath)
+            return render_template('result.html', html_code=html_code, css_code=css_code)
         else:
             return "Failed to fetch the URL"
     except Exception as e:
-        return f"An error occurred: {str(e)}"
-
-@app.route('/download_html')
-def download_html():
-    html_filepath = request.args.get('filepath')
-    return send_file(html_filepath, as_attachment=True)
-
-@app.route('/download_css')
-def download_css():
-    css_filepath = request.args.get('filepath')
-    return send_file(css_filepath, as_attachment=True)
+        return str(e)
 
 if __name__ == '__main__':
     app.run(debug=True)
