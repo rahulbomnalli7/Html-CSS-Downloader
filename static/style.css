@@ -1,0 +1,12 @@
+pre {
+    font-family: monospace;
+    white-space: pre-wrap;
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 10px 0;
+    overflow-x: auto;
+}
+h1 {
+    color: #333;
+}

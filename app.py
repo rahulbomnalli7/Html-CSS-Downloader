@@ -1,8 +1,8 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, Response, send_file
 import requests
 from bs4 import BeautifulSoup
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 
 def get_external_css(soup, base_url):
     css_links = []
@@ -36,11 +36,30 @@ def get_code():
                 if css_response.status_code == 200:
                     css_code += f"/* CSS from {css_url} */\n" + css_response.text + "\n"
 
-            return render_template('result.html', html_code=html_code, css_code=css_code)
+            # Create HTML and CSS files
+            html_file = f"{base_url.replace('/', '_').replace(':', '_')}.html"
+            css_file = f"{base_url.replace('/', '_').replace(':', '_')}.css"
+
+            with open(html_file, 'w') as file:
+                file.write(html_code)
+
+            with open(css_file, 'w') as file:
+                file.write(css_code)
+
+            # Offer HTML and CSS files for download
+            return render_template('result.html', html_file=html_file, css_file=css_file)
         else:
             return "Failed to fetch the URL"
     except Exception as e:
         return str(e)
+
+# Define a route to download the files
+@app.route('/download/<filename>')
+def download(filename):
+    if filename.endswith('.html'):
+        return send_file(filename, as_attachment=True, download_name='downloaded.html')
+    elif filename.endswith('.css'):
+        return send_file(filename, as_attachment=True, download_name='downloaded.css')
 
 if __name__ == '__main__':
     app.run(debug=True)

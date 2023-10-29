@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Web Code Analyzer - Result</title>
+    <title>Download HTML and CSS Files</title>
 </head>
 <body>
-    <h1>HTML Code</h1>
-    <pre>{{ html_code }}</pre>
-
-    <h1>CSS Code</h1>
-    <pre>{{ css_code }}</pre>
+    <h2>Click the links below to download the HTML and CSS files:</h2>
+    <a href="{{ url_for('download', filename=html_file) }}" download>Download HTML</a><br>
+    <a href="{{ url_for('download', filename=css_file) }}" download>Download CSS</a>
 </body>
 </html>
